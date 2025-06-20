@@ -1,0 +1,8 @@
+{
+  "name": "@aynen",
+  "description": "hmm",
+  "manifestVersion": 1,
+  "pluginLists": [
+    "https://raw.githubusercontent.com/victorboniface/lookman/builds/plugins.json"
+  ]
+}
