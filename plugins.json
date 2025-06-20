@@ -1,0 +1,21 @@
+[
+    {
+        "iconUrl": "https://www.google.com/s2/favicons?domain=tr.canlitv.team&sz=%size%",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/victorboniface/lookman",
+        "fileSize": 18710,
+        "status": 1,
+        "language": "tr",
+        "authors": [
+            "aynen"
+        ],
+        "tvTypes": [
+            "Live"
+        ],
+        "version": 1,
+        "internalName": "CanliTV",
+        "description": "Canl\u0131Tv",
+        "url": "https://raw.githubusercontent.com/victorboniface/lookman/builds/CanliTV.cs3",
+        "name": "CanliTV"
+    }
+]
