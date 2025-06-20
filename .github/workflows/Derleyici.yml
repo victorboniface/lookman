@@ -17,11 +17,15 @@ jobs:
           path: src
           ref: main
 
-      - name: Derleme branch'i (builds) checkout
-        uses: actions/checkout@v4.2.2
-        with:
-          path: builds
-          ref: builds
+      - name: Derleme branch'i (builds) checkout veya oluştur
+        run: |
+          git clone --branch builds https://github.com/victorboniface/lookman.git builds || \
+          git clone https://github.com/victorboniface/lookman.git builds && \
+          cd builds && \
+          git checkout --orphan builds && \
+          git rm -rf . || true && \
+          git commit --allow-empty -m "init builds branch" && \
+          git push origin builds
 
       - name: JDK 17 Kur
         uses: actions/setup-java@v4.6.0
@@ -48,9 +52,8 @@ jobs:
       - name: Derlemeleri Push'la
         run: |
           cd builds
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
-          git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/victorboniface/lookman.git
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
           git add .
           git commit -m "Yeni Derleme: $GITHUB_SHA" || echo "No changes"
-          git push origin builds
+          git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/victorboniface/lookman.git builds
