@@ -19,28 +19,30 @@ on:
 jobs:
   CloudStreamDerleyici:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Repo Checkout
+      - name: Repo'yu Checkout Et
         uses: actions/checkout@v4.2.2
         with:
-          fetch-depth: 0  # tüm branchleri al
+          fetch-depth: 0  # tüm branch geçmişini al
 
-      - name: JDK 17 Ayarla
+      - name: JDK 17 Kur
         uses: actions/setup-java@v4.6.0
         with:
           distribution: adopt
           java-version: 17
 
-      - name: Android SDK Ayarla
+      - name: Android SDK Kur
         uses: android-actions/setup-android@v3.2.2
 
-      - name: Builds branch'ine geç
+      - name: builds branch'ine geç
         run: |
           git fetch origin builds
           git switch builds || git checkout -b builds
 
-      - name: Eski Derlemeleri Temizle
-        run: find . -name '*.cs3' -delete
+      - name: plugins.json hariç tüm dosyaları sil
+        run: |
+          find . -type f ! -name 'plugins.json' -delete
 
       - name: Eklentileri Derle
         run: |
