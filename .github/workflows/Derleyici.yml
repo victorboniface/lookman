@@ -1,30 +1,27 @@
 name: CloudStream Derleyici
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
-  cancel-in-progress: true
-
 on:
   workflow_dispatch:
   push:
     branches:
       - main
-    paths-ignore:
-      - "**/*.md"
-      - "**/*.yml"
-      - "**/*.jpg"
-      - "**/*.png"
-      - "**/*.py"
 
 jobs:
-  CloudStreamDerleyici:
+  derleme:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Repo'yu Checkout Et
+      - name: Kaynak kod (main branch) checkout
         uses: actions/checkout@v4.2.2
         with:
-          fetch-depth: 0  # tüm branch geçmişini al
+          path: src
+          ref: main
+
+      - name: Derleme branch'i (builds) checkout
+        uses: actions/checkout@v4.2.2
+        with:
+          path: builds
+          ref: builds
 
       - name: JDK 17 Kur
         uses: actions/setup-java@v4.6.0
@@ -35,24 +32,22 @@ jobs:
       - name: Android SDK Kur
         uses: android-actions/setup-android@v3.2.2
 
-      - name: builds branch'ine geç
+      - name: plugins.json hariç her şeyi sil
         run: |
-          git fetch origin builds
-          git switch builds || git checkout -b builds
-
-      - name: plugins.json hariç tüm dosyaları sil
-        run: |
+          cd builds
           find . -type f ! -name 'plugins.json' -delete
 
       - name: Eklentileri Derle
         run: |
+          cd src
           chmod +x ./gradlew
           ./gradlew make makePluginsJson
-          cp **/build/*.cs3 .
-          cp build/plugins.json .
+          cp **/build/*.cs3 ../builds
+          cp build/plugins.json ../builds
 
-      - name: Derlemeleri Yükle
+      - name: Derlemeleri Push'la
         run: |
+          cd builds
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
           git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/victorboniface/lookman.git
