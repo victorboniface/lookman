@@ -20,19 +20,10 @@ jobs:
   CloudStreamDerleyici:
     runs-on: ubuntu-latest
     steps:
-      - name: "'src' Depo Kontrolü"
+      - name: Repo Checkout
         uses: actions/checkout@v4.2.2
         with:
-          path: "src"
-
-      - name: "'build' Depo Kontrolü"
-        uses: actions/checkout@v4.2.2
-        with:
-          ref: "builds"
-          path: "builds"
-
-      - name: Eski Derlemeleri Temizle 
-        run: find $GITHUB_WORKSPACE/builds -name '*.cs3'   -delete
+          fetch-depth: 0  # tüm branchleri al
 
       - name: JDK 17 Ayarla
         uses: actions/setup-java@v4.6.0
@@ -43,27 +34,26 @@ jobs:
       - name: Android SDK Ayarla
         uses: android-actions/setup-android@v3.2.2
 
+      - name: Builds branch'ine geç
+        run: |
+          git fetch origin builds
+          git switch builds || git checkout -b builds
+
+      - name: Eski Derlemeleri Temizle
+        run: find . -name '*.cs3' -delete
+
       - name: Eklentileri Derle
         run: |
-          cd $GITHUB_WORKSPACE/src
-          chmod +x gradlew
+          chmod +x ./gradlew
           ./gradlew make makePluginsJson
-          cp **/build/*.cs3 $GITHUB_WORKSPACE/builds
-          cp build/plugins.json $GITHUB_WORKSPACE/builds
-
-      
-
-      
-
-     
+          cp **/build/*.cs3 .
+          cp build/plugins.json .
 
       - name: Derlemeleri Yükle
         run: |
-          cd $GITHUB_WORKSPACE/builds
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
           git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/victorboniface/lookman.git
           git add .
-          git commit -m "Yeni Derleme: $GITHUB_SHA" || echo "No changes to commit"
+          git commit -m "Yeni Derleme: $GITHUB_SHA" || echo "No changes"
           git push origin builds
-
